@@ -1,7 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 import { Layout } from 'antd';
-import Navbar from '../Components/common/navbar';
+import Navbar from '../Components/Navbar';
 
 import { PropertiesPage } from '../Pages/properties/propertiesPage';
 import { PropertyPage } from '../Pages/properties/propertyPage';

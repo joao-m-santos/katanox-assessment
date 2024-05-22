@@ -1,7 +1,7 @@
-import { fork } from 'redux-saga/effects';
-import propertySaga from './property/saga';
+import { all, fork } from 'redux-saga/effects';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default function* rootSaga(): Generator<any, any, any> {
-  yield fork(propertySaga);
+import { watchGetProperties } from './property/saga';
+
+export default function* rootSaga() {
+  yield all([fork(watchGetProperties)]);
 }

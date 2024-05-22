@@ -3,9 +3,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { Button, Card, Carousel, Col, Flex, Rate, Row, Space, Statistic, Typography } from 'antd';
-import { ArrowLeftOutlined, EnvironmentOutlined, LoadingOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, EnvironmentOutlined } from '@ant-design/icons';
+import Loading from '../../Components/common/Loading';
 
-import { getProperties } from '../../Store/property/actions';
+import { getProperties } from '../../Store/property/slice';
 import { getPropertiesSelector } from '../../Store/property/selectors';
 
 const headerStyle: React.CSSProperties = {
@@ -26,27 +27,28 @@ const infoRowStyle: React.CSSProperties = {
   marginTop: '1rem',
 };
 
-const loadingIconStyle: React.CSSProperties = {
-  fontSize: '4rem',
-  margin: '4rem',
-};
-
 export const PropertyPage = () => {
   const navigate = useNavigate();
+
   const dispatch = useDispatch();
-  const properties = useSelector(getPropertiesSelector);
+  const { data, isLoading } = useSelector(getPropertiesSelector);
 
   const { propertyId } = useParams();
 
-  const property = useMemo(() => {
-    return properties?.filter((p: { id: any }) => p['id'] === propertyId)[0];
-  }, [properties, propertyId]);
+  const propertyData = useMemo(() => {
+    return data?.find((p) => p.property.id === propertyId);
+  }, [data, propertyId]);
+
+  const property = propertyData?.property;
+  const policies = propertyData?.policies;
 
   useEffect(() => {
     dispatch(getProperties());
   }, [dispatch]);
 
-  return property ? (
+  return isLoading ? (
+    <Loading />
+  ) : (
     <>
       <Flex justify="end" style={headerStyle}>
         <Button type="link" icon={<ArrowLeftOutlined />} onClick={() => navigate('/properties')}>
@@ -54,61 +56,65 @@ export const PropertyPage = () => {
         </Button>
       </Flex>
 
-      <Row gutter={16}>
-        <Col span={12}>
-          <Typography.Text code>{property.id}</Typography.Text>
-          <Typography.Title level={2} style={titleStyle}>
-            {property.name}
-          </Typography.Title>
+      {property ? (
+        <>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Typography.Text code>{property.id}</Typography.Text>
+              <Typography.Title level={2} style={titleStyle}>
+                {property.name}
+              </Typography.Title>
 
-          <Space direction="vertical" size="large">
-            <Rate disabled defaultValue={property.starRating} />
-            <Space size="small">
-              <EnvironmentOutlined />
-              <Typography>
-                {property.addressLine1}
-                <br />
-                {property.postcode} {property.city}, {property.country}
-              </Typography>
-            </Space>
-            <Typography.Text type="secondary">{property.description}</Typography.Text>
-          </Space>
-        </Col>
+              <Space direction="vertical" size="large">
+                <Rate disabled defaultValue={property.starRating} />
+                <Space size="small">
+                  <EnvironmentOutlined />
+                  <Typography>
+                    {property.addressLine1}
+                    <br />
+                    {property.postcode} {property.city}, {property.country}
+                  </Typography>
+                </Space>
+                <Typography.Text type="secondary">{property.description}</Typography.Text>
+              </Space>
+            </Col>
 
-        <Col span={12}>
-          <Carousel arrows autoplay>
-            {property.images.map((img: { id: Key | null | undefined; url: string | undefined }) => (
-              <div>
-                <img key={img.id} alt={property.name} src={img.url} style={imageStyle} />
-              </div>
-            ))}
-          </Carousel>
-        </Col>
-      </Row>
+            <Col span={12}>
+              <Carousel arrows autoplay>
+                {property.images.map((img) => (
+                  <div key={img.id}>
+                    <img alt={property.name} src={img.url} style={imageStyle} />
+                  </div>
+                ))}
+              </Carousel>
+            </Col>
+          </Row>
 
-      <Row gutter={16} style={infoRowStyle}>
-        <Col span={8}>
-          <Card size="small">
-            <Statistic title="Rooms" value={property.rooms} />
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card size="small">
-            <Statistic title="Check-in" value={property.checkInTime} />
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card size="small">
-            <Statistic title="Check-out" value={property.checkOutTime} />
-          </Card>
-        </Col>
-      </Row>
+          <Row gutter={16} style={infoRowStyle}>
+            <Col span={8}>
+              <Card size="small">
+                <Statistic title="Rooms" value={property.rooms} />
+              </Card>
+            </Col>
+            <Col span={8}>
+              <Card size="small">
+                <Statistic title="Check-in" value={property.checkInTime} />
+              </Card>
+            </Col>
+            <Col span={8}>
+              <Card size="small">
+                <Statistic title="Check-out" value={property.checkOutTime} />
+              </Card>
+            </Col>
+          </Row>
 
-      <Typography.Title level={3}>Policies</Typography.Title>
+          <Typography.Title level={3}>Policies</Typography.Title>
+        </>
+      ) : (
+        <Typography.Title level={2} style={titleStyle}>
+          Property not found.
+        </Typography.Title>
+      )}
     </>
-  ) : (
-    <Flex justify="center">
-      <LoadingOutlined style={loadingIconStyle} />
-    </Flex>
   );
 };
