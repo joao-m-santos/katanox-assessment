@@ -1,16 +1,40 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { PropertiesPage } from "../Pages/propertiesPage";
-import { PropertyPage } from "../Pages/propertyPage";
-import Navbar from "../Components/common/navbar";
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+
+import { Layout } from 'antd';
+import Navbar from '../Components/common/navbar';
+
+import { PropertiesPage } from '../Pages/properties/propertiesPage';
+import { PropertyPage } from '../Pages/properties/propertyPage';
+
+const layoutStyle = {
+  minHeight: '100vh',
+};
+
+const contentStyle = {
+  width: '80%',
+  margin: 'auto',
+};
 
 const MainRouter: React.FC = () => {
   return (
     <BrowserRouter>
-      <Navbar/>
-      <Routes>
-        <Route path='/' element={<PropertiesPage />} />
-        <Route path='/property' element={<PropertyPage />} />
-      </Routes>
+      <Layout style={layoutStyle}>
+        <Layout.Header>
+          <Navbar />
+        </Layout.Header>
+
+        <Layout.Content style={contentStyle}>
+          <Routes>
+            {/* Properties */}
+            <Route path="/" element={<Navigate to="/properties" replace />} />
+            <Route path="/properties" element={<PropertiesPage />} />
+            <Route path="/properties/:propertyId" element={<PropertyPage />} />
+
+            {/* catch-all redirect to /properties */}
+            <Route path="*" element={<Navigate to="/properties" />} />
+          </Routes>
+        </Layout.Content>
+      </Layout>
     </BrowserRouter>
   );
 };

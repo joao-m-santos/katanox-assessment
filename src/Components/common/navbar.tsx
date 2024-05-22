@@ -1,25 +1,29 @@
-import React from "react";
-import type { MenuProps } from "antd";
-import { Menu } from "antd";
-import { useNavigate } from "react-router-dom";
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const items: MenuProps["items"] = [
+import { Menu, type MenuProps } from 'antd';
+
+const items: MenuProps['items'] = [
   {
-    label: "Properties",
-    key: 'properties'
+    label: 'Properties',
+    key: 'properties',
   },
 ];
 
 const Navbar: React.FC = () => {
-  const navigate = useNavigate()
-  const onClick = () => {
-    navigate('/')
+  const navigate = useNavigate();
+
+  const onClick: MenuProps['onClick'] = ({ key }) => {
+    navigate(`/${key}`);
   };
+
   return (
     <Menu
-      onClick={onClick}
-      mode='horizontal'
+      defaultSelectedKeys={['properties']}
+      mode="horizontal"
+      theme="dark"
       items={items}
+      onClick={onClick}
     />
   );
 };
