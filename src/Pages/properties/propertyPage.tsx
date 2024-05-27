@@ -1,13 +1,15 @@
-import { Key, useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { Button, Card, Carousel, Col, Flex, Rate, Row, Space, Statistic, Typography } from 'antd';
 import { ArrowLeftOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import Loading from '../../Components/common/Loading';
+import PolicyList from './components/PolicyList';
 
-import { getProperties } from '../../Store/property/slice';
+import { getProperties, setPropertyPolicies } from '../../Store/property/slice';
 import { getPropertiesSelector } from '../../Store/property/selectors';
+import type { IPropertyPolicy, PolicyType } from '../../Store/property/types';
 
 const headerStyle: React.CSSProperties = {
   padding: '1rem 0',
@@ -45,6 +47,12 @@ export const PropertyPage = () => {
   useEffect(() => {
     dispatch(getProperties());
   }, [dispatch]);
+
+  const handlePolicySave = (item: IPropertyPolicy, policyType: PolicyType) => {
+    dispatch(
+      setPropertyPolicies({ propertyId: propertyId as string, policyType, policyData: item })
+    );
+  };
 
   return isLoading ? (
     <Loading />
@@ -108,7 +116,25 @@ export const PropertyPage = () => {
             </Col>
           </Row>
 
-          <Typography.Title level={3}>Policies</Typography.Title>
+          {policies && (
+            <>
+              <Typography.Title level={3}>Policies</Typography.Title>
+
+              <Typography.Title level={4}>No-show policies</Typography.Title>
+              <PolicyList
+                type="noShowPolicies"
+                data={policies.noShowPolicies}
+                onSave={(item) => handlePolicySave(item, 'noShowPolicies')}
+              />
+
+              <Typography.Title level={4}>Cancellation policies</Typography.Title>
+              <PolicyList
+                type="cancellationPolicies"
+                data={policies.cancellationPolicies}
+                onSave={(item) => handlePolicySave(item, 'cancellationPolicies')}
+              />
+            </>
+          )}
         </>
       ) : (
         <Typography.Title level={2} style={titleStyle}>

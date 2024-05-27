@@ -25,7 +25,9 @@ export interface IPropertyData {
   }>;
 }
 
-interface IPropertyPolicy {
+export type PolicyType = 'noShowPolicies' | 'cancellationPolicies';
+
+export interface IPropertyPolicy {
   id: string;
   name: string;
   description: string;
@@ -33,7 +35,7 @@ interface IPropertyPolicy {
   chargeType: string;
 }
 
-interface IPropertyCancellationPolicy extends IPropertyPolicy {
+export interface IPropertyCancellationPolicy extends IPropertyPolicy {
   reference: string;
   days: number;
   hours: number;
@@ -52,4 +54,10 @@ export interface PropertyState {
     data: Array<IPropertyObject> | null;
     isLoading: boolean;
   };
+}
+
+export interface SetPropertyActionPayload {
+  propertyId: string;
+  policyType: PolicyType;
+  policyData: IPropertyPolicy | IPropertyCancellationPolicy;
 }

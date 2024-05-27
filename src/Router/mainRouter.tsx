@@ -13,6 +13,7 @@ const layoutStyle = {
 const contentStyle = {
   width: '80%',
   margin: 'auto',
+  paddingBottom: '1rem',
 };
 
 const MainRouter: React.FC = () => {
